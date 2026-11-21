@@ -267,7 +267,15 @@ def write_png(cv, path):
 
 def main():
     os.makedirs("/output", exist_ok=True)
-    write_png(draw(), "/output/entry.png")
+    path = "/output/entry.png"
+    write_png(draw(), path)
+    size = os.path.getsize(path)
+    if size > 1048576:
+        raise SystemExit("entry.png exceeds the 1 MiB cap: %d bytes" % size)
+    with open(path, "rb") as f:
+        head = f.read(8)
+    if head != b"\x89PNG\r\n\x1a\n":
+        raise SystemExit("entry.png is not a PNG")
 
 
 if __name__ == "__main__":
